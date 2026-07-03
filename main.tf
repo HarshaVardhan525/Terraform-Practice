@@ -42,18 +42,29 @@ resource "aws_route_table_association" "my_route_table_association" {
     route_table_id = aws_route_table.my_route_table.id
 }
 
+variable "server_port" {
+    description = "Port used for http requests"
+    type = number
+    default = 8080
+}
+variable "ssh_port" {
+    description = "Port used for http requests"
+    type = number
+    default = 8080
+}
+
 resource "aws_security_group" "my_security_group" {
     name = "my_security_group"
     vpc_id = aws_vpc.my_vpc.id
     ingress {
-        from_port = 22
-        to_port = 22
+        from_port = var.ssh_port
+        to_port = var.ssh_port
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
     ingress {
-        from_port = 80
-        to_port = 80
+        from_port = var.server_port
+        to_port = var.server_port
         protocol = "tcp"
         cidr_blocks = ["0.0.0.0/0"]
     }
@@ -82,4 +93,8 @@ resource "aws_instance" "my_ec2" {
 
 }
 
-
+output "public_ip" {
+    description = "The Public ip of the ec2 instance"
+    value = aws_instance.my_ec2.public_ip
+    
+}
